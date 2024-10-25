@@ -1,0 +1,7 @@
+if myid >= 1.5 then x = y
+// This is a single-line comment
+/* This is a 
+   multi-line comment */
+"Hello, World!"
+true && false || !myid
+123u
