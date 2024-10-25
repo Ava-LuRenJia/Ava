@@ -1,0 +1,8 @@
+(KEYWORD, 'if')
+(ID, 'myid')
+(KEYWORD, ' ')
+(FLOAT, '1.5')
+(KEYWORD, 'then')
+(ID, 'x')
+(KEYWORD, ' ')
+(ID, 'y')
