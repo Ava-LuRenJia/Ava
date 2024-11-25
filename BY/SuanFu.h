@@ -1,9 +1,6 @@
 #ifndef BY_SUANFU_H
 #define BY_SUANFU_H
 
-#include "Lexical.h"
-#include "GramAnalysis.h"
-
 /*
  G2[E]：E → T | E+T | E-T T → F | T*F | T/F F → i | (E)
  */
