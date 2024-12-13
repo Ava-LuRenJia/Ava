@@ -4,7 +4,7 @@
 #include "Lexical.h"
 #include "GramAnalysis.h"
 
-// ËÄÔªÊ½Êı¾İ½á¹¹
+// å››å…ƒå¼æ•°æ®ç»“æ„
 struct QUATERNION {
     char op[MAX_TOKEN_LENGTH];
     char arg1[MAX_TOKEN_LENGTH];
@@ -16,74 +16,80 @@ char *E(void);
 char *T(void);
 char *F(void);
 
-// È«¾Ö±äÁ¿
-struct QUATERNION *pQuad;  // ËÄÔªÊ½±í
-int NXQ = 0;  // ËÄÔªÊ½Ë÷Òı
-int NXTemp = 1;  // ÁÙÊ±±äÁ¿¼ÆÊı
+// å…¨å±€å˜é‡
+struct QUATERNION *pQuad;  // å››å…ƒå¼è¡¨
+int NXQ = 0;  // å››å…ƒå¼ç´¢å¼•
+int NXTemp = 1;  // ä¸´æ—¶å˜é‡è®¡æ•°
 
-// ÓÃÓÚÉú³ÉËÄÔªÊ½µÄº¯Êı
+// æ‰“å°é”™è¯¯ä¿¡æ¯å¹¶é€€å‡ºç¨‹åºçš„é€šç”¨å‡½æ•°
+void printErrorAndExit(const char* errorMsg) {
+    printf("Error: %s\n", errorMsg);
+    exit(1);
+}
+
+// ç”¨äºç”Ÿæˆå››å…ƒå¼çš„å‡½æ•°
 void GEN(char *Op, char *Arg1, char *Arg2, char *Result) {
     if (Op == NULL || strlen(Op) == 0) {
-        printf("Error: ²Ù×÷·ûÎª¿Õ\n");
-        exit(1);  // Ç¿ÖÆÍË³ö£¬ÌáÊ¾µ÷ÊÔĞÅÏ¢
+        printf("Error: æ“ä½œç¬¦ä¸ºç©º\n");
+        exit(1);  // å¼ºåˆ¶é€€å‡ºï¼Œæç¤ºè°ƒè¯•ä¿¡æ¯
     }
     strcpy(pQuad[NXQ].op, Op);
     strcpy(pQuad[NXQ].arg1, Arg1);
     strcpy(pQuad[NXQ].arg2, Arg2);
     strcpy(pQuad[NXQ].result, Result);
     printf("GEN: (%s, %s, %s, %s)\n", Op, Arg1, Arg2, Result);
-    NXQ++;  // ¸üĞÂËÄÔªÊ½Ë÷Òı
+    NXQ++;  // æ›´æ–°å››å…ƒå¼ç´¢å¼•
 }
 
 
-// Éú³ÉĞÂÁÙÊ±±äÁ¿
+// ç”Ÿæˆæ–°ä¸´æ—¶å˜é‡
 char *NewTemp(void) {
-    static char TempID[10];  // Ê¹ÓÃ¾²Ì¬Êı×é£¬±ÜÃâ¶¯Ì¬ÄÚ´æ·ÖÅä
+    static char TempID[10];  // ä½¿ç”¨é™æ€æ•°ç»„ï¼Œé¿å…åŠ¨æ€å†…å­˜åˆ†é…
     sprintf(TempID, "T%d", NXTemp++);
     return TempID;
 }
 
 
-// µİ¹éÏÂ½µÓï·¨·ÖÎö
+// é€’å½’ä¸‹é™è¯­æ³•åˆ†æ
 char *E(void) {
     char *E1_place, *E2_place, *Temp_place;
 
-    // ¼ì²â¸³ÖµÓï¾ä£¨:=£©
+    // æ£€æµ‹èµ‹å€¼è¯­å¥ï¼ˆ:=ï¼‰
     if (tokens[currentToken].type == ID && tokens[currentToken + 1].type == IS) {
-        char *ID_value = tokens[currentToken].value;  // ¸³ÖµÓï¾ä×ó²à
-        currentToken += 2;  // Ìø¹ı ID ºÍ := ·ûºÅ
+        char *ID_value = tokens[currentToken].value;  // èµ‹å€¼è¯­å¥å·¦ä¾§
+        currentToken += 2;  // è·³è¿‡ ID å’Œ := ç¬¦å·
 
-        E1_place = E();  // ½âÎöÓÒ²àµÄ±í´ïÊ½
+        E1_place = E();  // è§£æå³ä¾§çš„è¡¨è¾¾å¼
 
-        // Éú³ÉËÄÔªÊ½
+        // ç”Ÿæˆå››å…ƒå¼
         GEN(":=", E1_place, "", ID_value);
-        return ID_value;  // ·µ»Ø¸³ÖµºóµÄ±êÊ¶·û
+        return ID_value;  // è¿”å›èµ‹å€¼åçš„æ ‡è¯†ç¬¦
     }
 
-    E1_place = T();  // ½âÎöT
+    E1_place = T();  // è§£æT
 
-    // ´¦Àí¼Ó·¨£¨+£©ÔËËã·û
+    // å¤„ç†åŠ æ³•ï¼ˆ+ï¼‰è¿ç®—ç¬¦
     while (tokens[currentToken].type == PLUS) {
-        char op[2] = "+";  // '+' ²Ù×÷·û
-        currentToken++;  // Ìø¹ı²Ù×÷·û
-        E2_place = T();  // ½âÎöT
+        char op[2] = "+";  // '+' æ“ä½œç¬¦
+        currentToken++;  // è·³è¿‡æ“ä½œç¬¦
+        E2_place = T();  // è§£æT
 
-        Temp_place = NewTemp();  // Éú³ÉĞÂµÄÁÙÊ±±äÁ¿
-        GEN(op, E1_place, E2_place, Temp_place);  // Éú³ÉËÄÔªÊ½
-        E1_place = Temp_place;  // ¸üĞÂE1_placeÎªĞÂµÄÁÙÊ±±äÁ¿
+        Temp_place = NewTemp();  // ç”Ÿæˆæ–°çš„ä¸´æ—¶å˜é‡
+        GEN(op, E1_place, E2_place, Temp_place);  // ç”Ÿæˆå››å…ƒå¼
+        E1_place = Temp_place;  // æ›´æ–°E1_placeä¸ºæ–°çš„ä¸´æ—¶å˜é‡
     }
 
-    return E1_place;  // ·µ»Ø×îÖÕµÄ¼ÆËã½á¹û
+    return E1_place;  // è¿”å›æœ€ç»ˆçš„è®¡ç®—ç»“æœ
 }
 
 char *T(void) {
     char *T1_place, *T2_place, *Temp_place;
-    printf("½âÎöT¿ªÊ¼, currentToken: %d\n", currentToken);
+    printf("è§£æTå¼€å§‹, currentToken: %d\n", currentToken);
 
-    T1_place = F();  // ½âÎöF
-    printf("½âÎöFºó£¬µ±Ç°T1_place: %s, currentToken: %d\n", T1_place, currentToken);
+    T1_place = F();  // è§£æF
+    printf("è§£æFåï¼Œå½“å‰T1_place: %s, currentToken: %d\n", T1_place, currentToken);
 
-    // ´¦Àí³Ë·¨£¨*£©ºÍ³ı·¨£¨/£©ÔËËã·û
+    // å¤„ç†ä¹˜æ³•ï¼ˆ*ï¼‰å’Œé™¤æ³•ï¼ˆ/ï¼‰è¿ç®—ç¬¦
     while (tokens[currentToken].type == MUL || tokens[currentToken].type == DIV) {
         char op[2] = {0};
         if (tokens[currentToken].type == DIV) {
@@ -93,73 +99,75 @@ char *T(void) {
         }
         op[1] = '\0';
 
-        printf("µ±Ç°²Ù×÷·ûÎª£º'%s'\n", op);
+        printf("å½“å‰æ“ä½œç¬¦ä¸ºï¼š'%s'\n", op);
         currentToken++;
 
         T2_place = F();
-        printf("½âÎöFºó£¬µ±Ç°T2_place: %s, currentToken: %d\n", T2_place, currentToken);
+        printf("è§£æFåï¼Œå½“å‰T2_place: %s, currentToken: %d\n", T2_place, currentToken);
 
         Temp_place = NewTemp();
         GEN(op, T1_place, T2_place, Temp_place);
-        printf("Éú³ÉËÄÔªÊ½£º(%s, %s, %s, %s)\n", op, T1_place, T2_place, Temp_place);
+        printf("ç”Ÿæˆå››å…ƒå¼ï¼š(%s, %s, %s, %s)\n", op, T1_place, T2_place, Temp_place);
 
         T1_place = Temp_place;
     }
 
 
-    return T1_place;  // ·µ»Ø×îÖÕ½á¹û
+    return T1_place;  // è¿”å›æœ€ç»ˆç»“æœ
 }
 
 char *F(void) {
     char *place;
 
-    // ´¦Àí±êÊ¶·û£¨ID£©
+    // å¤„ç†æ ‡è¯†ç¬¦ï¼ˆIDï¼‰
     if (tokens[currentToken].type == ID) {
         char *id_value = tokens[currentToken].value;
-        currentToken++;  // Ìø¹ı ID
-        return id_value;  // ·µ»Ø±êÊ¶·ûµÄÖµ
+        currentToken++;  // è·³è¿‡ ID
+        return id_value;  // è¿”å›æ ‡è¯†ç¬¦çš„å€¼
     }
 
-        // ´¦ÀíÕûÊı£¨INT£©
+        // å¤„ç†æ•´æ•°ï¼ˆINTï¼‰
     else if (tokens[currentToken].type == INT) {
         char *int_value = tokens[currentToken].value;
-        currentToken++;  // Ìø¹ı INT
-        return int_value;  // ·µ»ØÕûÊıµÄÖµ
+        currentToken++;  // è·³è¿‡ INT
+        return int_value;  // è¿”å›æ•´æ•°çš„å€¼
     }
 
-        // ´¦Àí¸¡µãÊı£¨REAL£©
+        // å¤„ç†æµ®ç‚¹æ•°ï¼ˆREALï¼‰
     else if (tokens[currentToken].type == REAL) {
         char *real_value = tokens[currentToken].value;
-        currentToken++;  // Ìø¹ı REAL
-        return real_value;  // ·µ»Ø¸¡µãÊıµÄÖµ
+        currentToken++;  // è·³è¿‡ REAL
+        return real_value;  // è¿”å›æµ®ç‚¹æ•°çš„å€¼
     }
 
-        // ´¦ÀíÀ¨ºÅ±í´ïÊ½£¨LP ºÍ RP£©
+        // å¤„ç†æ‹¬å·è¡¨è¾¾å¼ï¼ˆLP å’Œ RPï¼‰
     else if (tokens[currentToken].type == LP) {
-        currentToken++;  // Ìø¹ı '('
-        place = E();  // µİ¹éµ÷ÓÃ E ½âÎö±í´ïÊ½
+        currentToken++;  // è·³è¿‡ '('
+        place = E();  // é€’å½’è°ƒç”¨ E è§£æè¡¨è¾¾å¼
         if (tokens[currentToken].type == RP) {
-            currentToken++;  // Ìø¹ı ')'
+            currentToken++;  // è·³è¿‡ ')'
             return place;
         } else {
             printf("Error: Missing closing parenthesis ')'\n");
-            exit(1);  // Èç¹ûÃ»ÓĞ±ÕÀ¨ºÅ£¬±¨´í²¢ÍË³ö
+            exit(1);  // å¦‚æœæ²¡æœ‰é—­æ‹¬å·ï¼ŒæŠ¥é”™å¹¶é€€å‡º
         }
     } else {
-        printf("Error: Invalid factor\n");
-        exit(1);  // ÆäËû´íÎó£¬±¨´í²¢ÍË³ö
+        char errorMsg[50];
+        sprintf(errorMsg, "Invalid character: '%s'", tokens[currentToken].value);
+        printErrorAndExit(errorMsg);
+        exit(1);
     }
 }
 
-// Óï·¨·ÖÎöÆ÷µÄÈë¿Úº¯Êı
+// è¯­æ³•åˆ†æå™¨çš„å…¥å£å‡½æ•°
 void Recursive(void) {
-    currentToken = 0;  // ³õÊ¼»¯µ±Ç°tokenË÷Òı
-    pQuad = (struct QUATERNION *)malloc(100 * sizeof(struct QUATERNION));  // ·ÖÅäËÄÔªÊ½±í¿Õ¼ä
-    char *result = E();  // µ÷ÓÃµİ¹é·ÖÎö±í´ïÊ½
+    currentToken = 0;  // åˆå§‹åŒ–å½“å‰tokenç´¢å¼•
+    pQuad = (struct QUATERNION *)malloc(100 * sizeof(struct QUATERNION));  // åˆ†é…å››å…ƒå¼è¡¨ç©ºé—´
+    char *result = E();  // è°ƒç”¨é€’å½’åˆ†æè¡¨è¾¾å¼
 
-    printf("ËÄÔªÊ½Éú³É½á¹û£º\n");
+    printf("å››å…ƒå¼ç”Ÿæˆç»“æœï¼š\n");
     for (int i = 0; i < NXQ; i++) {
         printf("%d: (%s, %s, %s, %s)\n", i, pQuad[i].op, pQuad[i].arg1, pQuad[i].arg2, pQuad[i].result);
     }
-    free(pQuad);  // ÊÍ·ÅËÄÔªÊ½±í¿Õ¼ä
+    free(pQuad);  // é‡Šæ”¾å››å…ƒå¼è¡¨ç©ºé—´
 }
