@@ -1,0 +1,6 @@
+(INT, 1)
+(PLUS, +)
+(INT, 1)
+(IS, :=)
+(INT, 2)
+(END, EOF)
